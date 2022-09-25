@@ -1,0 +1,86 @@
+Why Spring : 
+===========
+
+Spring in nutshell : spring is very popular farmework for enterpise application, and it is alternative to j2ee
+
+But what about j2ee :  [1999 - j2ee 1.2 -> Servlet,JSP,EJB,JMS,RMI][2001 - j2ee 1.3 -> EJB,CMP(Conatainer Managed persistence),JCA(Java Connector Architecture)] [2003 - j2ee 1.4 ->webservices mgmt deployment][2006 - jee 5 -> ease of use EJB 3,JPA,JSF,JAXB,JAX-WS][2009- jee 6 -> jax-rs,CDI,bean-validation][2013 -jee7 ->JMS2,BAtch Tx,Concurrency,WebSocketes][2017- jee8 -> Java Servlet 4.0 API with HTTP/2 support, new Rest reactive Client API,Support of java se 8 capabilites,Server-sent event support,Asynchronous CDI Events]
+
+As seen complexity with EJB 1.x and 2.x till 2003, Thats when ROD Jhonson(Founder of Spring Framweork) wrote a book J2EE without EJB, J2EE with Spring Framework that is when spring got popularity and it relased spring1.0 in 2004
+
+Later Sun people realized as people moving twoawards sprig framework from Java EE5 in 2006 they started simplyfing EJB and introducing Dependecny Injection which are part of Spring core But till that time spring got very popular. Adoption of EJB was pretty less.
+
+Now both JEE8 and Spring 5.x got similar features for developing enterpise application but  Spring framework gain popularity still most the people using spring framework for development.
+
+Spring5 Update :
+===============
+ 
+ From spring5 you must use java8 or higher, Depecreated legacy integrations Tiles,Velocity,Guava etc..,
+Upgraded spring MVC to use servlet 4, Added new reactive programming spring webflux.
+
+Spring core framework :
+=====================
+
+"Simplify java enterpise development" -> Spring purpose
+Goals :
+1)Lightweight development with java pojo
+2)DI
+3)declartive programing with spring AOP
+4)minimize boilerplate code
+**Spring core container** : "Factory for creating beans and managing bean dependnces" :Beans, Core, spEL, Context
+**Spring AOP** : "Aspect oriented programming add functionality to objects decalrtively - logging,security,transcations etc.., Instrumentation : java agents to remotly monitor your app with jmx" : AOP, Aspects, Instrumentation, Messaging
+**Spring Data Access layer** :"JDBC Helper class reduce jdbc code to 50%, ORM object to relational mapping it allows to integration with hibenrate/JPA, Java Message Service(JMS) for sending async mesages to Message brokers spring provide helper classes for JMS" : JDBc,ORM,Transcations,OXM,JMS
+**Spring Web** : "All related to web classes , it is home for spring mvc"
+**Spring Test** : "Support Test Driven Development, Mock objects and out-of-container testing":unit,mock,integration
+Spring projects :
+================
+Additonal spring moudle built on top of spring core.
+Spring cloud, Spring Batch, Spring Data,Spring security,Spring for Android,Spring webflow,Spring Wbeservices, Spring LDAP ...
+
+Dev Enviornemnt:
+================
+Need 2 things, 1) Java Application server for web application development 2) Java IDE
+1)Java App server - Tomcat,JBOSS,weblogic etc.., Will Discuss Tomcat latest version 10(2021) started support Jakarta EE9 -> renamed pacakges javax.* to jakarta.*,
+Spring 5 currently doesnt support the new pacakge renaming jakarta EE9, As result Spring5 doesnt support tomcat 10.
+Done Developmet setup with java app server, java ide, Connectiong app server to ide, adding spring jars to ide of spring core.
+
+Spring IOC:
+==========
+The approach of outsourcing construction and management of objects. IN A Nutshell "Outsource to an object factory".
+**Spring container Primary Functions** : [create and manage Objects (IOC), Inject object dependencies(DI) ],Spring container Configuration using [ xml,java annoations, java source code ].
+Spring development process : [Configure Spring Beans, Create Spring Container, Retreive bean from spring container]
+    1)Configure Spring Bean using xml: applocationContext.xml <beans><bean id="alias" class="fqdn of class"/></beans>
+    2)Create Spring OCntainer: Spring Container is also knonw as "ApplicationContext", ClasspathXmlApplicationContext context = new ClasspathXmlApplicationContext("applicaitonContext.xml")
+    3)Retreiev bean from spring container : Coach coach = context.getBean("alias",Coach.class);
+**Spring Bean** : A "Spring Bean" is simply a Java object.When Java objects are created by the Spring Container, then Spring refers to them as "Spring Beans".
+**getBean(String) vs getBean)(String,Class<T> requiredType)**: getBean() if returned  bean not of required thows class cast exception, Where as getBean(string,Class<T> requiredBean) name of the bean and type of the bean must match, type of bean be interface or superclass. 
+
+Spring DI: the dependency inversion principle
+=========
+The client delegates to calls to another object the responsiblity of providing its dependencies. two most common DI,
+1)Contructor DI : define dependency interace and class, Create  constructo in your class for injections,configure the dependecy injection in spring config file.
+2)Setter DI : Create setter methods in our class for injection, configure the dependency in spring config file. 
+
+**In nutshell about IOC** :- We create classes and define them as beans in configuration file(xml,annoation,java pojo) and provide to spring conatiner(ApplicationContext is interface impmentation claspathxmlapplicationxcontext). As IOC stated outsourcing creation and managing beans is achieved here by giving config file with beans required to Application context.
+**In nutshell about DI**:-  we manage depencies of object though injecting thme via construcot or setter. As DI stated that it depends on DependecyInversion princple. Where we provide depencies of a bean in config file thorugh constructo or setter, Application context is actually injecting depedencies based on config.
+
+Inject literal values though setter and getters and defining values in config file. Reading values from prop file instead of config file.
+Reading from prop file : Create prop file, Load prop file to spring config, Finally ref those values from prop file. creating prop file under src of project, and fill key-value pairs in prop file, Loading prop file to springcontainer using configuration in applicationContext.xml before beans <context:property-placeholder location="classpath:propfilename"/>, This way prop file will availble in spring container, reading values from prop file, in config file instead of hardcoding values we can replace them with prop file values as follows value="${key}"
+
+Spring Beans Overview :
+=====================
+Scope refers to the lifecycle of bean,[how long it live, how it shared, how many instances created]. Deafult scope of bean is singleton
+Singleton: spring conatiner create only one instance of the bean, it is cached in memory,All the requests for bean will retuen shared refrence to same bean.
+**Spring bean scopes **: singleton - create single shared instance of bean, prototype - create a new bean instance for each container request,  request-scoped to http web request only used for webapps, session - scoped to a http web session only used in web apps, global-seession: scoped to global http web session only used for webapps
+
+Spring bean hooks : during spring initalzation and destory we can add init-method and destroy-method as hooks  to execute  custom code during bean lifecycle initalization and destroy.
+For "prototype" scoped beans, Spring does not call the destroy method, Spring does not manage the complete lifecycle of a prototype bean: the container instantiates, configures, prototype object, and hands it to the client, with no further record of that prototype instance. 
+
+How can I create code to call the destroy method on prototype scope beans?Create a custom bean processor. This bean processor will keep track of prototype scoped beans. During shutdown it will call the destroy() method on the prototype scoped beans.The prototype scoped beans MUST implement the DisposableBean interface. This interface defines a "destroy()" method. The Spring configuration does not require use the destroy-method attribute for prototype.
+
+Configure Spring with Java annoations:
+======================================
+Java Annotations : special lables/marker added to java classes, provide meta-data about the class, processed at compile time or runtime for special processing
+Why spring config with annoatation instead of xml, Because Annoatations minimize xml configuration.
+Scanning for Component clases : spring will scan your java classes for special annotations, Automatically register the beans in spring container
+Spring Annoation based config dev process :
+
