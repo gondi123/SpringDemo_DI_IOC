@@ -43,6 +43,8 @@ Need 2 things, 1) Java Application server for web application development 2) Jav
 Spring 5 currently doesnt support the new pacakge renaming jakarta EE9, As result Spring5 doesnt support tomcat 10.
 Done Developmet setup with java app server, java ide, Connectiong app server to ide, adding spring jars to ide of spring core.
 
+COnfiguration with Xml:-
+======================
 Spring IOC:
 ==========
 The approach of outsourcing construction and management of objects. IN A Nutshell "Outsource to an object factory".
@@ -57,8 +59,8 @@ Spring development process : [Configure Spring Beans, Create Spring Container, R
 Spring DI: the dependency inversion principle
 =========
 The client delegates to calls to another object the responsiblity of providing its dependencies. two most common DI,
-1)Contructor DI : define dependency interace and class, Create  constructo in your class for injections,configure the dependecy injection in spring config file.
-2)Setter DI : Create setter methods in our class for injection, configure the dependency in spring config file. 
+1)**Contructor DI** : define dependency interace and class, Create  constructo in your class for injections,configure the dependecy injection in spring config file.
+2)**Setter DI** : Create setter methods in our class for injection, configure the dependency in spring config file. 
 
 **In nutshell about IOC** :- We create classes and define them as beans in configuration file(xml,annoation,java pojo) and provide to spring conatiner(ApplicationContext is interface impmentation claspathxmlapplicationxcontext). As IOC stated outsourcing creation and managing beans is achieved here by giving config file with beans required to Application context.
 **In nutshell about DI**:-  we manage depencies of object though injecting thme via construcot or setter. As DI stated that it depends on DependecyInversion princple. Where we provide depencies of a bean in config file thorugh constructo or setter, Application context is actually injecting depedencies based on config.
@@ -66,8 +68,8 @@ The client delegates to calls to another object the responsiblity of providing i
 Inject literal values though setter and getters and defining values in config file. Reading values from prop file instead of config file.
 Reading from prop file : Create prop file, Load prop file to spring config, Finally ref those values from prop file. creating prop file under src of project, and fill key-value pairs in prop file, Loading prop file to springcontainer using configuration in applicationContext.xml before beans <context:property-placeholder location="classpath:propfilename"/>, This way prop file will availble in spring container, reading values from prop file, in config file instead of hardcoding values we can replace them with prop file values as follows value="${key}"
 
-Spring Beans Overview :
-=====================
+Spring Beans Scopes Overview :
+============================
 Scope refers to the lifecycle of bean,[how long it live, how it shared, how many instances created]. Deafult scope of bean is singleton
 Singleton: spring conatiner create only one instance of the bean, it is cached in memory,All the requests for bean will retuen shared refrence to same bean.
 **Spring bean scopes **: singleton - create single shared instance of bean, prototype - create a new bean instance for each container request,  request-scoped to http web request only used for webapps, session - scoped to a http web session only used in web apps, global-seession: scoped to global http web session only used for webapps
@@ -77,10 +79,98 @@ For "prototype" scoped beans, Spring does not call the destroy method, Spring do
 
 How can I create code to call the destroy method on prototype scope beans?Create a custom bean processor. This bean processor will keep track of prototype scoped beans. During shutdown it will call the destroy() method on the prototype scoped beans.The prototype scoped beans MUST implement the DisposableBean interface. This interface defines a "destroy()" method. The Spring configuration does not require use the destroy-method attribute for prototype.
 
-Configure Spring with Java annoations:
-======================================
+Configure Spring with Java annoations and implemt IOC:
+=====================================================
 Java Annotations : special lables/marker added to java classes, provide meta-data about the class, processed at compile time or runtime for special processing
 Why spring config with annoatation instead of xml, Because Annoatations minimize xml configuration.
 Scanning for Component clases : spring will scan your java classes for special annotations, Automatically register the beans in spring container
-Spring Annoation based config dev process :
+Spring Annoation based config dev process : Enable component scanning in spring config file, Add @Component Annoatation to your java classes, Reterive bean from spring container
 
+@Component without beanid will make spring container to create default bean id, default beanid is class name. 
+example : ServerDeployemnt - serverDeployemnt is default bean id generated by spring .
+However, for the special case of when BOTH the first and second characters of the class name are upper case, then the name is NOT converted. example : RESTService - RESTService is default bean id generated by spring .
+
+Spring DI with Annoation and Autowiring:
+=======================================
+Spring Autowiring - For DI spring uses Autowiring, Spring will look for a class that matches the property - matches by type : class or interface, Spring will inject it automatically .. hence it is autowired.
+
+Autowiring Injections type : constructor Injection, Setter Injection, filed injection.
+
+**Constructor Injection** : Dev process : Define the depedecny interface and class, Create a constructor in your class for injections, configure the dependency injection with @Autowired Annoation
+
+**Setter Injection** : Dev process : Define the depedecny interface and class, Create a setter method in your class for injections, configure the dependency injection with @Autowired Annoation
+Note :- For Setter Injection, It should not be a setter method, it can be any method with autowired can inject dependency
+
+**Filed Injection**:- Inject dependencies by setting filed values on your class directly, Accomplished by using java reflection, Dev Process : configure the dependency injection with autowired annoation - Applied directly on filed, no need for stter methods
+
+**Qualifier** : When using autowiring on Deplymentprocess Interface, what if there are multiple DeploymetProcess implementations? : Spring has special support to handle this case. Use the @Qualifier annotation. along qutowire on interface define qualifier("beanid") which you awnt to inject as dependecy.
+For Field injection : 
+------------------
+@Autowired
+@Qulifier("beanid")
+private DeployemntProcess deployemntprocess
+For Constructor Injection :
+-----------------------
+@Autowired
+public AgileDevProcess(@Qualifier("serverDeployemnt")DeployemntProcess deploymentProcess){}
+For Setter Injection : can use both above ways
+---------------------
+@Autowired
+public void setDeployProcess(@Qualifier("serverDeployemnt")DeployemntProcess deploymentProcess){}
+
+@Autowired
+@Qualifier(serverDeployemnt)
+public void setDeployProcess(DeployemntProcess deploymentProcess){}
+
+Injecting literal values in Annoation based, where ${key}private String email; it read property value if we metioned context proerty oader in appliaction context.
+
+Scopes in Annoation based config : 
+==================================
+As we kown scope of bean is nothing how bean created and shared, Scopes are singleton only one instance created of bean and shared same ref to every request, prototype is create new instance for each and every request.
+@scope("singleton"),@scope("prototype")
+
+Custom code during bean lifecyle inialization and destory, we can @Postconstruct<methd> @PreDestroy<method> similar to init-method and destroy-method in xml config.
+
+**We cannot @PostConstruct and @PreDestory annoation from java9** : to use this we need to add a dependency call javax.annotation-api.jar
+we cannot directly use @predestroy on protoype scope beans. similar to xml config.
+
+3 Ways Spring Application Configuration :
+=========================================
+
+1)XML Based Configuration : it is compleltly xml based configuration
+ApplicationContext.xml
+<beans>
+<context:property_loader location="classpath:<propfile>">
+<bean id="abc" class="fqdn of class"></bean>
+<bean id="abc" class="fqdn of class" scope="singleton" init-method="intiBean" destory-method="destroybean">
+<constructor-arg ref="beanid">
+<property name="setDepenecy" ref="beanid">
+<property name="team" value="${team}">
+</bean>
+</beans>
+
+2)Annoation based configuration : it is both xml and java annotation based configuration
+ApplicationContext.xml
+<context:component-scan base-package="com.jeeva.springdemo">
+<context:property_loader location="classpath:<propfile>">
+@Component
+@Scope("singelton")
+Class KanbanDevProcess{
+     //field injection with qualifier
+     @Autowired
+     @Qualifier("serverDeployemnt")
+     private DeployemntProcess deployemntprocess;
+     
+     @Value("${team}")
+     private String team;
+
+     @PostConstrcut
+     public void setInitCustomBeanCode(){}
+
+     @PreDestroy
+     public void setDestroyCustomBeanCode(){}
+}
+
+3)Spring Configuration with java Code no xml :-
+=============================================
+Dev process : create java class and add @Configuration, Add Component Scanning Support @ComponentScan()@optional , Read Spring java configuration, Reterive bean from spring container.
