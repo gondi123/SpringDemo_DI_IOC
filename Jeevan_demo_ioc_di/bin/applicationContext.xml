@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+    
+ <!-- Loading property file in configuration -->
+    
+<context:property-placeholder location="classpath:application.properties"/>
+    
+<!-- As IOC stated we are defining beans in config to provide for objectfactory which take care of
+creation of bean and managing beans, As it like outsource to object factory which is Spring core container -->
+
+<bean id="container" class="com.jeevan.springdemo.ContainerDeployment"> 
+</bean>
+<bean id="server" class="com.jeevan.springdemo.ServerDeployment"> 
+</bean>
+<!-- As DI stated injecting object dependency though constructor or settetr methods,
+As dependecy Inversion principle  spring container is managing injecting dependcies -->
+
+<bean id="waterfall" class="com.jeevan.springdemo.WaterfallDevProcess">
+    <!-- Setter Injection -->
+   <property name="deploymentType" ref="server"/>
+   
+   <!-- reading literal values through prop file -->
+   <property name="team" value="${team}"/>
+   <property name="teamMember" value="${teamMember}"/>
+   
+</bean>
+<bean id="agile" class="com.jeevan.springdemo.AgileDevProcess" scope="singleton"
+  init-method="handleInitBean" destroy-method="handleDestroyBean">
+     <constructor-arg ref="container"/>
+</bean>
+
+</beans>
