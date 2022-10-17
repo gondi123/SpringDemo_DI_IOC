@@ -14,7 +14,7 @@ Now both JEE8 and Spring 5.x got similar features for developing enterpise appli
 Spring5 Update :
 ===============
  
- From spring5 you must use java8 or higher, Depecreated legacy integrations Tiles,Velocity,Guava etc..,
+From spring5 you must use java8 or higher, Depecreated legacy integrations Tiles,Velocity,Guava etc..,
 Upgraded spring MVC to use servlet 4, Added new reactive programming spring webflux.
 
 Spring core framework :
@@ -174,3 +174,5 @@ Class KanbanDevProcess{
 3)Spring Configuration with java Code no xml :-
 =============================================
 Dev process : create java class and add @Configuration, Add Component Scanning Support @ComponentScan()@optional , Read Spring java configuration, Reterive bean from spring container.
+We can define a java class by adding @Configuration as spring configuration without xml, Along With @COnfiguration we can also define @componentScan("<base-package>") optional to scan all component and register them in sontainer, But without component scan we define beans in config class by adding @Bean annoation to a method which return bean.
+NOTE :- You can use both two approaches of @Bean AND component scanning depending on your application requirements. You can use @Bean for third-party beans. For your existing beans in your class you can use component scanning with @Component (also @Controller, @Service, @Repository ...). 
